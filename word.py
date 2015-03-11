@@ -1,40 +1,50 @@
 #!/usr/bin/python
 # coding=UTF-8
-from errors import InvalidWordStateError
+from errors import InvalidWordLabelError
 
 class Word(unicode):
     u"""
-    >>> w = Word(u"€")
+    >>> w = Word(u"You")
     >>> w
-    W(`€`)
-    >>> w.state 
-    0
-    >>> w.set_state(2)
-    >>> w.state
+    You
+    >>> w.label 
+    >>> w.set_label(Word.LABEL_SUBJECT)
+    >>> w.label
     2
-    >>> w.set_state(-1) # doctest: +ELLIPSIS
+    >>> w.set_label(-1) # doctest: +ELLIPSIS
     Traceback (most recent call last):
     ...
-    InvalidWordStateError...
+    InvalidWordLabelError...
+    >>> w
+    <subject>You</subject>
     """
     
-    STATE_DEFAULT = 0
-    STATE_SELECTED = 1
-    STATE_SUBJECT = 2
-    STATE_PREDICATE = 3
-    STATE_OJBECT = 4
+    
+    LABEL_SUBJECT = 2
+    LABEL_PREDICATE = 3
+    LABEL_OJBECT = 4        
+    
+    VALID_LABELS = (LABEL_SUBJECT, LABEL_PREDICATE, LABEL_OJBECT)
 
-    VALID_STATES = (STATE_DEFAULT, STATE_SUBJECT, STATE_SELECTED, 
-                  STATE_PREDICATE, STATE_OJBECT)
-    def __init__(self, s, state = STATE_DEFAULT):
-        self.state = state
+    LABEL2TAG = {
+        LABEL_SUBJECT: "subject",
+        LABEL_PREDICATE: "predicate",
+        LABEL_OJBECT: "object",
+    }
+    
+    def __init__(self, s):
+        self.label = None
         super(Word, self).__init__(s)
     
-    def set_state(self, state):
-        if state not in Word.VALID_STATES:
-            raise InvalidWordStateError("Valid states are %r" %(Word.VALID_STATES,))
+    def set_label(self, label):
+        if label not in Word.VALID_LABELS:
+            raise InvalidWordLabelError("Valid labels are %r" %(Word.VALID_LABELS,))
         else:
-            self.state = state
+            self.label = label
 
     def __repr__(self):
-        return "W(`%s`)" %(unicode(self).encode("utf8"))
+        if self.label:
+            tag = Word.LABEL2TAG[self.label]
+            return "<%s>%s</%s>" %(tag, unicode(self).encode("utf8"), tag)
+        else:
+            return unicode(self).encode("utf8")

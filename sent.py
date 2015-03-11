@@ -21,7 +21,4 @@ class Sentence(list):
         words = [Word(w) 
                  for w in nltk.word_tokenize(s)]
 
-        return Sentence(words)
-
-    
-        
+        return Sentence(words)    

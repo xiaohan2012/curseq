@@ -1,52 +1,60 @@
-from state import (State, AnnotatingState)
-from errors import InvalidControllerStateError
+from mode import (Mode, SelectionMode)
+from errors import InvalidModeError
 
 class Controller(object):
-    STATE_ORDINARY = 0
-    STATE_ANNOTATING = 1
+    MODE_ORDINARY = 0
+    MODE_SELECTION = 1
     
     def __init__(self, screen):
         self.screen = screen
-        self.states = {
-            Controller.STATE_ORDINARY: State(self.screen),
-            Controller.STATE_ANNOTATING: AnnotatingState(self.screen)
+        self.modes = {
+            Controller.MODE_ORDINARY: Mode(self.screen),
+            Controller.MODE_SELECTION: SelectionMode(self.screen)
         }
-        self.state = None
-        self.enter_state(Controller.STATE_ORDINARY)
+        self.mode = None
+        self.enter_mode(Controller.MODE_ORDINARY)
         
-    def enter_state(self, name):
-        if name in self.states:
-            if self.state: # we have some state before
-                old_state = self.state
-                self.state = self.states[name]
-                self.state_name = name
-                self.state.copy_context_from(old_state)
-            else: # a brand new state
-                self.state = self.states[name]
-                self.state_name = name
+    def enter_mode(self, name):
+        if name in self.modes:
+            if self.mode: # we have some mode before
+                old_mode = self.mode
+                self.mode = self.modes[name]
+                self.mode_name = name
+                self.mode.copy_context_from(old_mode)
+            else: # a brand new mode
+                self.mode = self.modes[name]
+                self.mode_name = name
             
         else:
-            raise InvalidControllerStateError("Available states are %r" %(self.states.keys()))
+            raise InvalidModeError("Available modes are %r" %(self.modes.keys()))
     
     def set_sentence(self, sent):
-        for state in self.states.values():
-            state.set_sentence(sent)
+        for mode in self.modes.values():
+            mode.set_sentence(sent)
+
+    @property
+    def sent(self):
+        for mode in self.modes.values():
+            if mode.sent is not None:
+                return mode.sent
+
+        return None
 
     def display_sentence(self):
-        self.state.display_sentence()
-
+        self.mode.display_sentence()
         
-    def in_state(self, name):
-        return self.state_name == name
-
+    def in_mode(self, name):
+        return self.mode_name == name
 
     # interaction stuff
     def left_arrow_pressed(self):
-        self.state.left_arrow_pressed()
+        self.mode.left_arrow_pressed()
 
     def right_arrow_pressed(self):
-        self.state.right_arrow_pressed()
+        self.mode.right_arrow_pressed()
 
             
     def key_pressed(self, keyboard_code):
-        self.state.key_pressed(keyboard_code)
+        self.mode.key_pressed(keyboard_code)
+
+    

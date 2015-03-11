@@ -1,8 +1,8 @@
 class CursorMoveError(Exception):
     pass
 
-class InvalidControllerStateError(Exception):
+class InvalidModeError(Exception):
     pass
 
-class InvalidWordStateError(Exception):
+class InvalidWordLabelError(Exception):
     pass
