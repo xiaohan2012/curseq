@@ -13,7 +13,8 @@ class AppFSA(TrieFSA):
     """
     FSA for this app
 
-    >>> fsa = AppFSA.from_config("test_config")
+    >>> from test_config import config
+    >>> fsa = AppFSA.from_config(config)
     >>> fsa.take('j')
     >>> fsa.can_terminate
     True
@@ -32,10 +33,8 @@ class AppFSA(TrieFSA):
     """
     
     @classmethod
-    def from_config(cls, module_name):
+    def from_config(cls, config):
         fsa = AppFSA()
-        
-        config = __import__(module_name).config
         for key in config:
             if key == "labels":
                 for group, group_labels in config[key].items():

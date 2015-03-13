@@ -8,8 +8,8 @@ class Sentence(list):
     u"""
     
     >>> s = Sentence.from_unicode(u"I love €.")
-    >>> s.words
-    [W(`I`), W(`love`), W(`€`), W(`.`)]
+    >>> s
+    [u'I', u'love', u'\\u20ac', u'.']
     """
 
     def __init__(self, words, **kwargs):
@@ -22,3 +22,9 @@ class Sentence(list):
                  for w in nltk.word_tokenize(s)]
 
         return Sentence(words)    
+
+    def __getitem__(self, index):
+        return self.words[index]
+
+    def __repr__(self):
+        return repr(self.words)
