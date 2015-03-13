@@ -24,22 +24,24 @@ class StateManager(object):
     2
     >>> sm.receive(Label("label_set1", "some_label"))
     >>> sm.get_display_data()
-    DisplayData(start=2, end=2, data=[('a', '-'), ('b', '-'), ('c', 'some_label')])
+    DisplayData(start=2, end=2, data=[(u'a', u'-'), (u'b', u'-'), (u'c', u'some_label')])
     >>> sm.cancel_label()
     >>> sm.get_display_data()
-    DisplayData(start=2, end=2, data=[('a', '-'), ('b', '-'), ('c', '-')])
+    DisplayData(start=2, end=2, data=[(u'a', u'-'), (u'b', u'-'), (u'c', u'-')])
     >>> sm.cancel_label() # no effect
     >>> sm.get_display_data()
-    DisplayData(start=2, end=2, data=[('a', '-'), ('b', '-'), ('c', '-')])
+    DisplayData(start=2, end=2, data=[(u'a', u'-'), (u'b', u'-'), (u'c', u'-')])
     >>> sm.set_mark() # mark on 
     >>> sm.select_on
     True
     >>> sm.receive(CursorLeft())
+    >>> sm.current_index
+    1
     >>> sm.get_selection_range()
     (1, 2)
     >>> sm.receive(Label("label_set1", "some_label"))
     >>> sm.get_display_data()
-    DisplayData(start=2, end=2, data=[('a', '-'), ('b', 'some_label'), ('c', 'some_label')])
+    DisplayData(start=1, end=1, data=[(u'a', u'-'), (u'b', u'some_label'), (u'c', u'some_label')])
     >>> sm.select_on
     False
     >>> sm.cancel_label()
@@ -47,10 +49,10 @@ class StateManager(object):
     >>> sm.receive(ConfirmSentence())
     >>> print open("data/test_data/output/0.txt").read()
     a  -
-    b  -
-    c  some_label
+    b  some_label
+    c  -
     >>> sm.get_display_data()
-    DisplayData(start=0, end=0, data=[('d', '-'), ('e', '-'), ('f', '-')])
+    DisplayData(start=0, end=0, data=[(u'd', u'-'), (u'e', u'-'), (u'f', u'-')])
     >>> sm.receive(ConfirmSentence())
     >>> print open("data/test_data/output/1.txt").read()
     d  -
@@ -164,6 +166,7 @@ class StateManager(object):
         if self.select_on:
             if self.selection_anchor + self.selection_offset > 0:
                 self.selection_offset -= 1
+                self.current_index -= 1
         else:
             if self.current_index > 0:
                 self.current_index -= 1
@@ -174,6 +177,7 @@ class StateManager(object):
         if self.select_on:
             if self.selection_anchor + self.selection_offset < self.index_max:
                 self.selection_offset += 1
+                self.current_index += 1
         else:
             if self.current_index < self.index_max:
                 self.current_index += 1

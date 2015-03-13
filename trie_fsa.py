@@ -2,12 +2,19 @@ import curses
 class InvalidTransition(Exception):
     pass
 
+class PathExist(Exception):
+    pass
+    
 class TrieFSA(object):
     """
     Trie implementation using dictionary
 
     >>> t = TrieFSA()
     >>> t.add_paths(['bar', 'baz', 'barz'], last_value_func = lambda o: "_end_")
+    >>> t.add_paths(['bar'], last_value_func = lambda o: "_end_")# doctest: +ELLIPSIS
+    Traceback (most recent call last):
+    ...
+    PathExist: Path 'bar' exist
     >>> t.valid_input()
     ['b']
     >>> t.add_paths(['foo'], last_value_func = lambda o: "_end_")
@@ -26,6 +33,12 @@ class TrieFSA(object):
     >>> t.take('f')
     >>> t.matching_paths()
     [(['f', 'o', 'o'], '_end_')]
+    >>> t.has_path('bar')
+    True
+    >>> t.has_path('ba')
+    False
+    >>> t.has_path('blah')
+    False
     """
     
     def __init__(self, last_key = None):
@@ -39,6 +52,9 @@ class TrieFSA(object):
         assert callable(last_value_func)
         
         for iterable in iter_list:
+            if self.has_path(iterable):
+                raise PathExist("Path %r exist" %(iterable))
+
             cur_dict = self.root
             for o in iterable:
                 cur_dict = cur_dict.setdefault(o, {})
@@ -72,3 +88,13 @@ class TrieFSA(object):
     def reset(self):
         self.state = self.root
         self.path = []
+
+    def has_path(self, iterable):
+        current = self.root
+        for i in iterable:
+            try:
+                current = current[i]
+            except KeyError:
+                return False
+
+        return self.last_key in current

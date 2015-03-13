@@ -21,15 +21,13 @@ class AppFSA(TrieFSA):
     >>> fsa.ops #doctest: +ELLIPSIS
     [<op.CursorLeft object at ...>]
     >>> fsa.reset()
-    >>> fsa.take('p')    
-    >>> fsa.take('r')
     >>> fsa.can_terminate
     False
-    >>> fsa.take('o')
+    >>> fsa.take('f')
     >>> fsa.can_terminate
     True
     >>> print fsa.ops #doctest: +ELLIPSIS
-    [Label(role, problem)]
+    [Label(is_product, product)]
     """
     
     @classmethod
@@ -38,9 +36,12 @@ class AppFSA(TrieFSA):
         for key in config:
             if key == "labels":
                 for group, group_labels in config[key].items():
-                    fsa.add_paths(group_labels, 
-                                  lambda label: Label(group, label))
-                        
+                    # add both shortcut key and name as the labeling event trigger
+                    # raise Exception(group_labels)
+                    for l in group_labels:
+                        fsa.add_paths([l['key']], 
+                                      lambda label: Label(group, l['name']))
+                    
             else:
                 if key in globals():
                     op = globals()[key]

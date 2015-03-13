@@ -15,11 +15,13 @@ HIGHLIGHT_WORD_STYLE_ID = 2
 
 class Display(object):
     """Display that prints stuff on screen"""
-    def __init__(self, screen, config):
+    def __init__(self, screen, config, highlight_words = None):
         curses.init_pair(CURRENT_WORD_STYLE_ID, 0, curses.COLOR_WHITE)
         curses.init_pair(HIGHLIGHT_WORD_STYLE_ID, 0, curses.COLOR_GREEN)
 
         self.config = config
+        self.highlight_words = highlight_words
+
         self.screen = screen
         self.max_row, self.max_col = screen.getmaxyx()        
         
@@ -52,6 +54,9 @@ class Display(object):
             for y_offset, stuff in enumerate(word):
                 if y_offset == 0 and i >= data.start_index and i<= data.end_index:
                     style_id = CURRENT_WORD_STYLE_ID
+                elif self.highlight_words is not None and y_offset == 0 \
+                     and stuff.lower() in self.highlight_words: #highlight the trigger words if necessary
+                    style_id = HIGHLIGHT_WORD_STYLE_ID
                 else:
                     style_id = DEFAULT_WORD_STYLE_ID
 
@@ -73,7 +78,9 @@ class Display(object):
         
         y+=1; self.screen.addstr(y, 0, "-"*10)
         for group_name, labels in self.config["labels"].items():
-            y+=1; self.screen.addstr(y, 0, "%s: %s" %(group_name, ' | '.join(labels)))
+            body = " | ".join(["%s(%r)" %(l['name'], l['key']) 
+                              for l in labels])
+            y+=1; self.screen.addstr(y, 0, "%s: %s" %(group_name, body))
         
         y+=2; self.screen.addstr(y,0,"Control Keys:")
         y+=1; self.screen.addstr(y, 0, "-"*10)

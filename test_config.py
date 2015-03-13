@@ -1,8 +1,10 @@
 import curses
 config = {
     "labels": {
-        "role": ["subject", "predicate", "problem"],
-        "is_product": ["is_product"],
+        "role": [{"name": "subject", "key": "a"}, 
+                 {"name": "predicate", "key": "s"}, 
+                 {"name": "object", "key": "d"}],
+        "is_product": [{"name": "product", "key": "f"}],
     }, 
     "CancelLabel": curses.KEY_BACKSPACE,
 
