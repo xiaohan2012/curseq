@@ -25,12 +25,10 @@ def main(stdscr):
     label_groups = config["labels"].keys()
     sm = StateManager(session, label_groups)
     
-    display = Display(stdscr)
+    display = Display(stdscr, config)
     display.display_sentence(sm.get_display_data())
-
     while True:        
-        c = stdscr.getch()
-
+        c = stdscr.getch()        
         try:
             c = chr(c)
         except ValueError:

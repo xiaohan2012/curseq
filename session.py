@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# coding=UTF-8
 """
 Handling the task continuation/break etc.
 """
@@ -14,7 +16,7 @@ class SessionError(Exception):
     pass
 
 class AnnotationSession(object):
-    """
+    u"""
     >>> s = AnnotationSession("data/test_data/session.pkl", "data/test_data/sents.txt", "data/test_data/output")
     >>> s.current_sent_id
     -1
@@ -58,6 +60,11 @@ class AnnotationSession(object):
     >>> os.remove("data/test_data/session.pkl")
     >>> os.remove("data/test_data/output/0.txt")
     >>> os.remove("data/test_data/output/1.txt")
+
+    >>> s = AnnotationSession("data/test_data/session.pkl", "data/test_data/unicode_test_sents.txt", "data/test_data/output")
+    >>> sent = s.next_sentence()
+    >>> s.save_annotation([(u"€400", u'-'), (u"£302m", u"-")])
+    >>> os.remove("data/test_data/session.pkl")
     """
     def __init__(self, session_path, sentence_path = None, output_dir = None):
         self.active = True

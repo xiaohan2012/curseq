@@ -146,6 +146,7 @@ class StateManager(object):
             self.set_sentence("Sentence exhausts")
             self.session.close()
         self.reset()
+
     def set_mark(self):
         if self.select_on:
             self.select_on = False
@@ -188,14 +189,14 @@ class StateManager(object):
     def get_annotation_data(self):
         data = []
         for w in self.sent:
-            item = [unicode(w).encode('utf8')] 
-            item += [w.labels.get(key, "-") for key in self.label_groups]
+            item = [unicode(w)] 
+            item += [unicode(w.labels.get(key, "-")) for key in self.label_groups]
             data.append(tuple(item))
         return data
         
     def get_display_data(self):
         data = self.get_annotation_data()
-            
+        
         start, end = self.get_selection_range()
         
         return DisplayData(start, end, data)
